@@ -20,14 +20,16 @@ class CurrentLocationClass(val context: Context,val locationCallBack :LocationCa
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
 
-    private fun isPermissionGranted()= ContextCompat.checkSelfPermission(context,
-        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    private fun isPermissionGranted():Boolean  {
+        return ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    }
 
     fun enableMyLocation(activity: Activity) {
         if (isPermissionGranted()) {
             Log.d("CurrentLocation","isMyLocationEnabled is true")
             getCurrentLocation(activity)
-        } else { ActivityCompat.requestPermissions(activity,
+        } else {
+            ActivityCompat.requestPermissions(activity,
                 arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),
                 REQUEST_LOCATION_PERMISSION
             )
@@ -37,7 +39,9 @@ class CurrentLocationClass(val context: Context,val locationCallBack :LocationCa
     fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray,activity:Activity) {
         if (requestCode == REQUEST_LOCATION_PERMISSION) {
-            if (grantResults.contains(PackageManager.PERMISSION_GRANTED)) {
+            if (permissions.size == 1 &&
+                permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION &&
+                grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 enableMyLocation(activity)
             }
         }
